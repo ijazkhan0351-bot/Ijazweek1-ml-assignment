@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refresh Opportunity Scoring — A Search Content Research Paper</title>
+<style>
+  :root {
+    --ink: #1b1d1f;
+    --paper: #faf9f6;
+    --panel: #f0efe9;
+    --line: #d8d5cb;
+    --accent: #2f5d50;
+    --accent-soft: #e4ede9;
+    --muted: #6b6a64;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    line-height: 1.6;
+  }
+  .sans {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .wide {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---- Header / Hero ---- */
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    padding: 72px 0 48px;
+  }
+  .kicker {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    margin-bottom: 18px;
+  }
+  h1.title {
+    font-size: 40px;
+    line-height: 1.15;
+    margin: 0 0 20px;
+    font-weight: 600;
+    max-width: 14ch;
+  }
+  .byline {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .byline a { color: var(--accent); }
+
+  /* ---- Nav ---- */
+  nav.toc {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    border-bottom: 1px solid var(--line);
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(250,249,246,0.94);
+    backdrop-filter: blur(6px);
+    z-index: 10;
+  }
+  nav.toc .wide { display: flex; gap: 20px; flex-wrap: wrap; }
+  nav.toc a { color: var(--ink); text-decoration: none; opacity: 0.7; }
+  nav.toc a:hover { opacity: 1; text-decoration: underline; }
+
+  /* ---- Sections ---- */
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 {
+    font-size: 26px;
+    margin: 0 0 22px;
+    font-weight: 600;
+  }
+  h3 { font-size: 19px; margin: 32px 0 12px; font-weight: 600; }
+  p { margin: 0 0 16px; font-size: 17px; }
+  ul, ol { font-size: 17px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+
+  .lede {
+    font-size: 20px;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+
+  /* ---- Stat row ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin: 28px 0;
+  }
+  .stat {
+    background: var(--paper);
+    padding: 20px 18px;
+  }
+  .stat .num {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .stat .lbl {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 12.5px;
+    color: var(--muted);
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ---- Tables ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 14.5px;
+    margin: 20px 0;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: none; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .result-row td.win { color: var(--accent); font-weight: 700; }
+
+  /* ---- Callouts ---- */
+  .note {
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    font-size: 15.5px;
+    margin: 20px 0;
+  }
+  .note.limit { border-left-color: #a05a3a; }
+  .placeholder {
+    background: #fff6e6;
+    border: 1px dashed #c9a24a;
+    padding: 14px 18px;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 13.5px;
+    color: #7a5c1f;
+    margin: 16px 0;
+  }
+
+  /* ---- Recommendation list ---- */
+  .reco {
+    border: 1px solid var(--line);
+    padding: 18px 20px;
+    margin: 14px 0;
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .reco .rank {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 14px;
+    min-width: 20px;
+  }
+  .reco .body h4 { margin: 0 0 6px; font-size: 16.5px; }
+  .reco .body p { margin: 0; font-size: 15px; color: var(--muted); }
+
+  /* ---- Footer ---- */
+  footer {
+    padding: 48px 0 80px;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  footer a { color: var(--accent); }
+
+  code {
+    background: var(--panel);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+
+  @media (max-width: 600px) {
+    h1.title { font-size: 30px; }
+    header.hero { padding: 48px 0 32px; }
+    section { padding: 40px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker sans">SEARCH CONTENT RESEARCH · FLYRANK ML INTERNSHIP</div>
+    <h1 class="title">Refresh Opportunity Scoring: Finding the Pages Worth Fixing First</h1>
+    <div class="byline">By <strong>Ijaz Ahmed</strong> · September 2026 · <a href="https://github.com/ijazkhan0351-bot/Ijazweek1-ml-assignment">View repo & notebooks</a></div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wide">
+    <a href="#abstract">Abstract</a>
+    <a href="#intro">Introduction</a>
+    <a href="#data">Data</a>
+    <a href="#method">Methodology</a>
+    <a href="#results">Results</a>
+    <a href="#limits">Limitations</a>
+    <a href="#recs">Recommendations</a>
+    <a href="#repro">Reproducibility</a>
+    <a href="#credit">Data Credit</a>
+  </div>
+</nav>
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <div class="wrap">
+    <h2>Abstract</h2>
+    <p class="lede">Can a handful of search-performance signals flag which content pages are worth reviewing before they quietly lose traffic?</p>
+    <p>
+      This paper asks whether pages showing early signs of search decline can be identified early enough to act on, using only signals a team would actually have on hand at decision time. Working from FlyRank's anonymized search-performance warehouse, I built a scoring pipeline that ranks pages by refresh urgency, starting from a hand-written rule baseline and testing whether a simple learned model could beat it under an honest, client-grouped validation split.
+    </p>
+    <p>
+      Under a client-grouped, time-aware validation split, a hand-written rule baseline reached a Precision@50 of 0.56. An initial logistic regression model appeared to reach 0.94 — until an audit revealed the label definition had arithmetically embedded one of the model's own input features, producing an inflated, unreliable score. After removing that feature and rebuilding the label independently, the corrected model reached a genuine Precision@50 of 0.84, a real improvement over the baseline. The result is a ranked, human-reviewed content action queue — not a fully automated system — intended as a monthly prioritization aid for content teams, together with the honest account of the leakage that nearly went unnoticed.
+    </p>
+  </div>
+</section>
+
+<!-- INTRODUCTION -->
+<section id="intro">
+  <div class="wrap">
+    <h2>Introduction</h2>
+    <p>
+      Content teams managing large page libraries face a recurring, unglamorous problem: which pages, out of thousands, actually need attention this month? Manually reviewing every page doesn't scale, and naive heuristics — "anything older than six months" — miss the interaction between staleness, visibility, and search performance that actually predicts decline.
+    </p>
+    <p>
+      <strong>The decision this work supports:</strong> a content editor or SEO strategist choosing which pages to prioritize for refresh each cycle, working from a ranked shortlist instead of guessing.
+    </p>
+    <p>
+      <strong>Why this matters practically:</strong> the cost of getting this wrong is asymmetric. A false positive (flagging a healthy page) wastes an afternoon of editorial time. A false negative (missing a genuinely declining page) can mean weeks of silently eroding organic traffic before anyone notices — which is the more expensive failure mode, and the one this work is tuned to avoid.
+    </p>
+    <p>
+      This work started from a real, recurring problem inside FlyRank's own content operations: content teams managing large page libraries can't manually review every page each month, and naive heuristics ("anything older than six months") miss the interaction between staleness, visibility, and search performance that actually predicts decline. This paper is that problem, worked end-to-end — from framing a measurable question, through a real production-scale warehouse, to a ranked action queue a content team could actually use, and including an honest account of a leakage mistake caught and fixed along the way.
+    </p>
+  </div>
+</section>
+
+<!-- DATA -->
+<section id="data">
+  <div class="wrap">
+    <h2>Data</h2>
+    <p>
+      This work uses the <strong>FlyRank Internship Warehouse Release (v20260703)</strong>, an anonymized, pseudonymized snapshot of real client search-performance data hosted on Hugging Face.
+    </p>
+    <div class="stats">
+      <div class="stat"><span class="num">78.8M</span><span class="lbl sans">daily fact rows</span></div>
+      <div class="stat"><span class="num">104</span><span class="lbl sans">pseudonymized clients</span></div>
+      <div class="stat"><span class="num">519.6K</span><span class="lbl sans">content items</span></div>
+      <div class="stat"><span class="num">2026-03</span><span class="lbl sans">development month</span></div>
+    </div>
+    <h3>Tables used</h3>
+    <ul>
+      <li><code>fact_content_daily_performance</code> — one row per report date × client × content item; the core signal table for this analysis.</li>
+      <li><code>dim_content</code> — content-level properties (joined where needed for age/word-count context).</li>
+    </ul>
+    <h3>Time window</h3>
+    <p>
+      Features are built from <strong>month=2026-03</strong> (a mid-panel month), with outcomes measured against <strong>2026-04</strong> to build a genuine past→future label. June 2026 — the final month in this release — was deliberately excluded from all development and treated as a sealed test month, since it is the natural outcome window for any past→future label built anywhere in this release.
+    </p>
+    <h3>What I excluded, and why</h3>
+    <ul>
+      <li><strong>All client and content identifiers</strong> from any public output — this paper reports only aggregate patterns.</li>
+      <li><strong>AI-referral columns</strong> (ai_chatgpt, ai_perplexity, etc.) — out of scope for this lane; mixing them in would blur what this analysis specifically tests (search/refresh signals).</li>
+      <li><strong>The June 2026 <code>_sample</code> table</strong> for anything beyond query-mechanics testing — using it to develop label logic would leak the natural outcome window into development.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="method">
+  <div class="wrap">
+    <h2>Methodology</h2>
+
+    <h3>Task framing</h3>
+    <p>
+      This is a <strong>scoring task</strong> built on a binary classification proxy. The deliverable an editor acts on is a ranked list, not a single yes/no prediction.
+    </p>
+
+    <h3>Label / proxy</h3>
+    <p>
+      <code>is_declining</code>: 1 if a page's April click volume falls meaningfully below its March daily rate (more than a 15% drop, annualized), 0 otherwise. This is a proxy, not a ground-truth "needs refresh" signal — a page can decline for reasons a refresh won't fix, which is addressed directly in Limitations.
+    </p>
+
+    <h3>Features (all knowable at decision time)</h3>
+    <table>
+      <tr><th>Feature</th><th>Available because…</th></tr>
+      <tr><td>Average impressions</td><td>Built only from March data, before the decision point</td></tr>
+      <tr><td>Average clicks</td><td>Historical, not future</td></tr>
+      <tr><td>Average search position</td><td>Known as soon as the month's crawl data lands</td></tr>
+      <tr><td>Click-through rate</td><td>Computed from already-observed clicks/impressions</td></tr>
+    </table>
+
+    <h3>Baseline</h3>
+    <p>
+      A hand-written rule: <code>score = staleness × visibility × impression volume</code>, using fixed thresholds (180+ days since update, 500+ impressions).
+    </p>
+
+    <h3>Validation design</h3>
+    <p>
+      <strong>Client-grouped, time-aware split.</strong> Pages are grouped by client so that no client's pages appear in both train and test — a naive row-level split would leak client-specific patterns and overstate performance, which I confirmed directly (see Results).
+    </p>
+
+    <h3>Leakage checks</h3>
+    <p>
+      All four features are confirmed to derive only from the March window; the April-derived label is used exclusively as the outcome, never as an input. Feature-label correlations were checked for any suspiciously high value that might indicate an accidental near-duplicate of the label.
+    </p>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="wrap">
+    <h2>Results</h2>
+
+    <h3>Model vs. baseline (same split, same metric)</h3>
+    <table>
+      <tr><th>Method</th><th class="num">Precision@50</th></tr>
+      <tr><td>Hand-written baseline rule</td><td class="num">0.560</td></tr>
+      <tr><td>Logistic Regression — original features (later found leaky)</td><td class="num">0.940</td></tr>
+      <tr class="result-row"><td>Logistic Regression — corrected features (honest)</td><td class="num win">0.840</td></tr>
+    </table>
+
+    <div class="note">
+      <strong>A leakage finding, reported honestly:</strong> the original 0.940 score used <code>avg_clicks</code> as both a model feature and part of the label's threshold definition — a mechanical, formulaic link, not genuine predictive skill. Random Forest under this original setup reached a suspicious Precision@50 of 1.000 with zero false positives in its top 50, which was the signal that prompted the audit. After removing <code>avg_clicks</code> from the feature set and rebuilding the label independently from any single feature, the corrected model reached 0.840 — still a real, meaningful improvement over the 0.560 baseline, and one I trust.
+    </div>
+
+    <h3>What the errors look like</h3>
+    <p>
+      Feature correlations with the corrected label are modest and reasonable (avg_impressions: 0.169, avg_position: −0.183, ctr: 0.180) — none near 1.0, unlike the leaky setup. The corrected model still misses roughly 16% of its top-50 calls, consistent with a genuinely hard, noisy prediction problem rather than an artificially easy one.
+    </p>
+
+    <h3>Ranked action distribution</h3>
+    <img src="figures/w07_action_distribution.png" alt="Action label distribution across monitor, review ranking strategy, and priority refresh categories" style="width:100%; border:1px solid var(--line); margin:20px 0;">
+    <p>
+      Of 23,235 scored pages in the test split, 13,737 were labeled <em>monitor</em> (no urgent action), 5,356 <em>review ranking strategy</em> (position below page two), and 4,142 <em>priority refresh</em> (high decline risk with decent visibility) — the shortlist a content team would actually act on first.
+    </p>
+  </div>
+</section>
+
+<!-- LIMITATIONS -->
+<section id="limits">
+  <div class="wrap">
+    <h2>Limitations &amp; Honest Framing</h2>
+    <div class="note limit">
+      <strong>This is a pattern study, not proof of cause and effect.</strong> All claims below use observed / directional / decision-support language deliberately.
+    </div>
+    <ul>
+      <li><strong>Unbalanced panel:</strong> per-client history depth differs across this warehouse release; any pattern found could be skewed toward clients with longer, more complete history.</li>
+      <li><strong>Proxy label, not ground truth:</strong> "declining" is a click-drop threshold, not a confirmed need for editorial refresh — a page can decline for reasons a content refresh won't address (seasonality, a competitor outranking it, an algorithm update).</li>
+      <li><strong>Single time window:</strong> validated on one March→April transition; performance has not been confirmed to hold across multiple months or seasons.</li>
+      <li><strong>Correlational, not causal:</strong> observed associations between signals (e.g., low CTR) and decline are not evidence that fixing the signal causes recovery.</li>
+      <li><strong>No individual-page guarantees:</strong> this is a decision-support ranking tool for prioritization, not a prediction anyone should treat as certain for any single page.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- RECOMMENDATIONS -->
+<section id="recs">
+  <div class="wrap">
+    <h2>Ranked Recommendations</h2>
+    <p>The action playbook this analysis supports, in priority order:</p>
+
+    <div class="reco">
+      <div class="rank">01</div>
+      <div class="body">
+        <h4>Priority refresh — high decline risk, decent position &amp; volume</h4>
+        <p>The strongest, most defensible action: pages with real visibility that are showing genuine decline signals, not just age.</p>
+      </div>
+    </div>
+    <div class="reco">
+      <div class="rank">02</div>
+      <div class="body">
+        <h4>Fix CTR / snippet review — high impressions, low click-through</h4>
+        <p>Cheap, fast fix for pages that are visible but under-converting that visibility into clicks.</p>
+      </div>
+    </div>
+    <div class="reco">
+      <div class="rank">03</div>
+      <div class="body">
+        <h4>Review ranking strategy — poor position (20+)</h4>
+        <p>Likely needs more than a content refresh; flagged for human strategic review rather than automatic action.</p>
+      </div>
+    </div>
+    <div class="reco">
+      <div class="rank">04</div>
+      <div class="body">
+        <h4>Monitor — everything else</h4>
+        <p>Not urgent. Revisit at the next monthly cycle rather than acting now.</p>
+      </div>
+    </div>
+
+    <h3>Human review is required throughout</h3>
+    <p>
+      This tool ranks and flags; it does not publish, rewrite, or remove content automatically. Client-facing reporting should never present raw model scores directly — they are internal prioritization signals, not something to show a client as a percentage guarantee.
+    </p>
+  </div>
+</section>
+
+<!-- REPRODUCIBILITY -->
+<section id="repro">
+  <div class="wrap">
+    <h2>Reproducibility</h2>
+    <p>Every step of this analysis is executed, versioned, and available in the accompanying repository:</p>
+    <ul>
+      <li><a href="https://github.com/ijazkhan0351-bot/Ijazweek1-ml-assignment/tree/main/work/notebooks">work/notebooks/</a> — every weekly notebook (w01–w07) plus <code>capstone.ipynb</code></li>
+      <li><a href="https://github.com/ijazkhan0351-bot/Ijazweek1-ml-assignment/blob/main/work/outputs/w07_metrics.json">work/outputs/w07_metrics.json</a> — the metrics receipt behind this paper's numbers</li>
+      <li><a href="https://github.com/ijazkhan0351-bot/Ijazweek1-ml-assignment">Full repository</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- DATA CREDIT -->
+<section id="credit">
+  <div class="wrap">
+    <h2>Acknowledgments &amp; Data Credit</h2>
+    <p>
+      Built on the FlyRank ML Internship dataset — a real, anonymized production search-performance warehouse made available for research and education.
+      Learn more at <a href="https://flyrank.ai">flyrank.ai</a>.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Ijaz Ahmed · FlyRank ML Internship, 2026 · <a href="https://github.com/ijazkhan0351-bot/Ijazweek1-ml-assignment">Repository</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
